@@ -1,6 +1,6 @@
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Book, Author, BookInstance
+from .models import Book, Author, BookInstance, Language
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
@@ -11,6 +11,7 @@ from .forms import RenewBookForm
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Author
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 def index(request):
     num_books = Book.objects.all().count()
@@ -73,6 +74,37 @@ class AuthorUpdate(UpdateView):
 class AuthorDelete(DeleteView):
     model = Author
     success_url = reverse_lazy('authors')
+
+class LanguageDetailView(generic.DetailView):
+    """Generic class-based detail view for a genre."""
+    model = Language
+
+class LanguageListView(generic.ListView):
+    """Generic class-based list view for a list of genres."""
+    model = Language
+    paginate_by = 10
+
+class LanguageCreate(PermissionRequiredMixin, CreateView):
+    model = Language
+    fields = ['name', ]
+    permission_required = 'catalog.add_language'
+
+
+class LanguageUpdate(PermissionRequiredMixin, UpdateView):
+    model = Language
+    fields = ['name', ]
+    permission_required = 'catalog.change_language'
+
+
+class LanguageDelete(PermissionRequiredMixin, DeleteView):
+    model = Language
+    success_url = reverse_lazy('languages')
+    permission_required = 'catalog.delete_language'
+
+class BookInstanceListView(generic.ListView):
+    """Generic class-based view for a list of books."""
+    model = BookInstance
+    paginate_by = 10
 
 @permission_required('catalog.can_mark_returned')
 def renew_book_librarian(request, pk):

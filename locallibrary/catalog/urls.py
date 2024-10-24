@@ -25,3 +25,14 @@ urlpatterns += [
     path('author/<int:pk>/update/', views.AuthorUpdate.as_view(), name='author-update'),
     path('author/<int:pk>/delete/', views.AuthorDelete.as_view(), name='author-delete'),
 ]
+
+urlpatterns += [
+    path('languages/', views.LanguageListView.as_view(), name='languages'),
+    path('language/<int:pk>', views.LanguageDetailView.as_view(),
+         name='language-detail'),
+    path('language/create/', views.LanguageCreate.as_view(), name='language-create'),
+    path('language/<int:pk>/update/',
+         views.LanguageUpdate.as_view(), name='language-update'),
+    path('language/<int:pk>/delete/',
+         views.LanguageDelete.as_view(), name='language-delete'),
+]

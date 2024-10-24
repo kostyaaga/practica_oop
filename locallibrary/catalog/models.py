@@ -3,6 +3,8 @@ from django.urls import reverse
 import uuid
 from django.contrib.auth.models import User
 from datetime import date
+from django.db.models import UniqueConstraint
+from django.db.models.functions import Lower
 
 class Genre(models.Model):
 
@@ -20,6 +22,8 @@ class Book(models.Model):
     summary = models.TextField(max_length=1000, help_text="Enter a brief description of the book")
     isbn = models.CharField('ISBN',max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>')
     genre = models.ManyToManyField(Genre, help_text="Select a genre for this book")
+    language = models.ForeignKey(
+        'Language', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.title
@@ -78,4 +82,18 @@ class Author(models.Model):
 
     def __str__(self):
         return '%s, %s' % (self.last_name, self.first_name)
+
+class Language(models.Model):
+    """Model representing a Language (e.g. English, French, Japanese, etc.)"""
+    name = models.CharField(max_length=200,
+                            unique=True,
+                            help_text="Enter the book's natural language (e.g. English, French, Japanese etc.)")
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular language instance."""
+        return reverse('language-detail', args=[str(self.id)])
+
+    def __str__(self):
+        """String for representing the Model object (in Admin site etc.)"""
+        return self.name
 
